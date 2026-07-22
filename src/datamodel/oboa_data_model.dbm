@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+CAUTION: Do not modify this file unless you know what you are doing.
+ Unexpected results may occur if the code is changed deliberately.
+-->
+<dbmodel pgmodeler-ver="1.2.3" use-changelog="false" max-obj-count="4"
+	 gen-disabled-objs-code="false" show-sys-schemas-rects="true"
+	 last-position="0,0" last-zoom="1" scene-rect="0,0,1280,720"
+	 default-owner="postgres"
+	 layers="Default"
+	 active-layers="0"
+	 layer-name-colors="#000000"
+	 layer-rect-colors="#b4b4b4"
+	 show-layer-names="false" show-layer-rects="false">
+<role name="oboa"
+ inherit="true"
+ login="true">
+</role>
+
+<database name="oboadb" is-template="false" allow-conns="true">
+</database>
+
+<schema name="public" layers="0" fill-color="#e1e1e1" name-color="#000000" sql-disabled="true">
+</schema>
+
+<schema name="oboa" layers="0" fill-color="#e1e1e1" name-color="#000000">
+	<role name="oboa"/>
+</schema>
+
+<table name="orchestration_configurations" layers="0" collapse-mode="2" max-obj-count="7" z-value="0">
+	<schema name="oboa"/>
+	<role name="oboa"/>
+	<position x="120" y="140"/>
+	<column name="orchestration_configuration_uuid" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="path" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="active_from" not-null="true">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="active_until">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="active" not-null="true">
+		<type name="bool" length="0"/>
+	</column>
+	<column name="content" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="orchestration_configurations_pk" type="pk-constr" table="oboa.orchestration_configurations">
+		<columns names="orchestration_configuration_uuid" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="orchestrated_files" layers="0" collapse-mode="2" max-obj-count="10" z-value="0">
+	<schema name="oboa"/>
+	<role name="oboa"/>
+	<position x="580" y="140"/>
+	<column name="file_uuid" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="path" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="file_group" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="reception_date" not-null="true">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="archived" not-null="true">
+		<type name="bool" length="0"/>
+	</column>
+	<column name="processed" not-null="true">
+		<type name="bool" length="0"/>
+	</column>
+	<constraint name="orchestrated_files_pk" type="pk-constr" table="oboa.orchestrated_files">
+		<columns names="file_uuid" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="orchestration_configuration_uuid" index="7"/>
+	</customidxs>
+	<customidxs object-type="constraint">
+		<object name="orchestrated_files_orchestration_configurations_fk" index="1"/>
+	</customidxs></table>
+
+<relationship name="orchestration_configurations_has_many_orchestrated_files" type="rel1n" layers="0"
+	 src-col-pattern="orchestration_configuration_uuid"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="orchestrated_files_orchestration_configurations_fk"
+	 fk-idx-pattern="idx_orchestrated_files_orchestration_configuration_uuid"
+	 custom-color="#3d7fc4"
+	 src-table="oboa.orchestration_configurations"
+	 dst-table="oboa.orchestrated_files"
+	 src-required="false" dst-required="false"
+	del-action="SET NULL"/>
+
+<table name="orchestration_operations" layers="0" collapse-mode="2" max-obj-count="8" z-value="0">
+	<schema name="oboa"/>
+	<role name="oboa"/>
+	<position x="1040" y="140"/>
+	<column name="operation_uuid" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="operation" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<column name="time_stamp" not-null="true">
+		<type name="timestamp" length="0"/>
+	</column>
+	<column name="status" not-null="true">
+		<type name="integer" length="0"/>
+	</column>
+	<column name="message">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="orchestration_operations_pk" type="pk-constr" table="oboa.orchestration_operations">
+		<columns names="operation_uuid" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="file_uuid" index="5"/>
+	</customidxs>
+	<customidxs object-type="constraint">
+		<object name="orchestration_operations_orchestrated_files_fk" index="1"/>
+	</customidxs></table>
+
+<relationship name="orchestrated_files_has_many_orchestration_operations" type="rel1n" layers="0"
+	 src-col-pattern="file_uuid"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="orchestration_operations_orchestrated_files_fk"
+	 fk-idx-pattern="idx_orchestration_operations_file_uuid"
+	 custom-color="#c97030"
+	 src-table="oboa.orchestrated_files"
+	 dst-table="oboa.orchestration_operations"
+	 src-required="false" dst-required="false"
+	del-action="SET NULL"/>
+
+<index name="idx_orchestration_configurations_path" table="oboa.orchestration_configurations"
+	 concurrent="false" unique="false" fast-update="false" buffering="false" nulls-not-distinct="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="false">
+			<column name="path"/>
+		</idxelement>
+</index>
+
+<index name="idx_orchestration_configurations_active_from" table="oboa.orchestration_configurations"
+	 concurrent="false" unique="false" fast-update="false" buffering="false" nulls-not-distinct="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="false">
+			<column name="active_from"/>
+		</idxelement>
+</index>
+
+<index name="idx_orchestration_configurations_active_until" table="oboa.orchestration_configurations"
+	 concurrent="false" unique="false" fast-update="false" buffering="false" nulls-not-distinct="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="false">
+			<column name="active_until"/>
+		</idxelement>
+</index>
+
+<index name="idx_orchestration_configurations_active" table="oboa.orchestration_configurations"
+	 concurrent="false" unique="false" fast-update="false" buffering="false" nulls-not-distinct="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="false">
+			<column name="active"/>
+		</idxelement>
+</index>
+
+<index name="idx_orchestrated_files_name" table="oboa.orchestrated_files"
+	 concurrent="false" unique="false" fast-update="false" buffering="false" nulls-not-distinct="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="false">
+			<column name="name"/>
+		</idxelement>
+</index>
+
+<index name="idx_orchestrated_files_path" table="oboa.orchestrated_files"
+	 concurrent="false" unique="false" fast-update="false" buffering="false" nulls-not-distinct="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="false">
+			<column name="path"/>
+		</idxelement>
+</index>
+
+<index name="idx_orchestrated_files_file_group" table="oboa.orchestrated_files"
+	 concurrent="false" unique="false" fast-update="false" buffering="false" nulls-not-distinct="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="false">
+			<column name="file_group"/>
+		</idxelement>
+</index>
+
+<index name="idx_orchestrated_files_reception_date" table="oboa.orchestrated_files"
+	 concurrent="false" unique="false" fast-update="false" buffering="false" nulls-not-distinct="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="false">
+			<column name="reception_date"/>
+		</idxelement>
+</index>
+
+<index name="idx_orchestrated_files_archived" table="oboa.orchestrated_files"
+	 concurrent="false" unique="false" fast-update="false" buffering="false" nulls-not-distinct="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="false">
+			<column name="archived"/>
+		</idxelement>
+</index>
+
+<index name="idx_orchestrated_files_processed" table="oboa.orchestrated_files"
+	 concurrent="false" unique="false" fast-update="false" buffering="false" nulls-not-distinct="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="false">
+			<column name="processed"/>
+		</idxelement>
+</index>
+
+<index name="idx_orchestrated_files_orchestration_configuration_uuid" table="oboa.orchestrated_files"
+	 concurrent="false" unique="false" fast-update="false" buffering="false" nulls-not-distinct="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="false">
+			<column name="orchestration_configuration_uuid"/>
+		</idxelement>
+</index>
+
+<index name="idx_orchestration_operations_operation" table="oboa.orchestration_operations"
+	 concurrent="false" unique="false" fast-update="false" buffering="false" nulls-not-distinct="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="false">
+			<column name="operation"/>
+		</idxelement>
+</index>
+
+<index name="idx_orchestration_operations_time_stamp" table="oboa.orchestration_operations"
+	 concurrent="false" unique="false" fast-update="false" buffering="false" nulls-not-distinct="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="false">
+			<column name="time_stamp"/>
+		</idxelement>
+</index>
+
+<index name="idx_orchestration_operations_status" table="oboa.orchestration_operations"
+	 concurrent="false" unique="false" fast-update="false" buffering="false" nulls-not-distinct="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="false">
+			<column name="status"/>
+		</idxelement>
+</index>
+
+<index name="idx_orchestration_operations_file_uuid" table="oboa.orchestration_operations"
+	 concurrent="false" unique="false" fast-update="false" buffering="false" nulls-not-distinct="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="false">
+			<column name="file_uuid"/>
+		</idxelement>
+</index>
+
+</dbmodel>
