@@ -1,0 +1,3 @@
+"""
+Packaged OBOA XML schemas.
+"""

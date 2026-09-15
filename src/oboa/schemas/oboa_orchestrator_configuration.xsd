@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="orchestrator_configuration">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="data" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="data_mask" type="NonEmptyString"/>
+              <xs:element name="data_processor" type="xs:string" minOccurs="0"/>
+            </xs:sequence>
+            <xs:attribute name="group" type="NonEmptyString" use="required"/>
+            <xs:attribute name="priority" type="xs:positiveInteger" use="required"/>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:simpleType name="NonEmptyString">
+    <xs:restriction base="xs:string">
+      <xs:minLength value="1"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>
