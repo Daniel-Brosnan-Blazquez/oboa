@@ -1,0 +1,19 @@
+{
+  "LOG": {
+    "LEVEL": "INFO",
+    "MAX_BYTES": 50000000,
+    "MAX_BACKUP": 30
+  },
+  "ORCHESTRATION": {
+    "polling_dir": "/oboa_polling",
+    "polling_frequency": 30,
+    "delete_after_archive": true,
+    "processing_dir": "/oboa_processing",
+    "error_dir": "/oboa_error"
+  },
+  "DAEMON": {
+    "pid_file": "/tmp/oboa.pid",
+    "database_startup_attempts": 30,
+    "database_startup_wait_seconds": 2
+  }
+}
