@@ -15,7 +15,7 @@ def default_resources_path():
     :return: package ``config`` directory path
     :rtype: str
     """
-    return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "config"))
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "config"))
 
 
 def get_resources_path():
