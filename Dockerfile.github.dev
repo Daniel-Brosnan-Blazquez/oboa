@@ -53,14 +53,14 @@ USER boa
 
 RUN git clone --branch ${GITHUB_BRANCH} ${REPOSITORY_URI} /oboa
 
-# Install ABOA before OBOA because OBOA delegates archiving to ABOA.
+# Install ABOA with OBOA so pip can use the local ABOA package to satisfy
+# OBOA's pinned runtime dependency during dependency resolution.
 RUN if [ -n "${ABOA_REPOSITORY_URI}" ]; then \
-      git clone --branch ${ABOA_GITHUB_BRANCH} ${ABOA_REPOSITORY_URI} /aboa_src && \
-      pip3 install --use-pep517 --target=/usr/local/python-packages "/aboa_src/src"; \
+      git clone --branch ${ABOA_GITHUB_BRANCH} ${ABOA_REPOSITORY_URI} /aboa && \
+      pip3 install --use-pep517 --target=/usr/local/python-packages "/aboa/src" "/oboa/src[tests]"; \
     else \
-      pip3 install --target=/usr/local/python-packages "aboa==0.1.0"; \
+      pip3 install --use-pep517 --target=/usr/local/python-packages "aboa==0.1.0" "/oboa/src[tests]"; \
     fi
-RUN pip3 install --use-pep517 --target=/usr/local/python-packages "/oboa/src[tests]"
 
 RUN cp /oboa/src/oboa/config/*.json /oboa/src/oboa/config/*.xml /resources_path
 RUN cp /oboa/src/oboa/scripts/*.py /scripts
