@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="920" viewBox="0 0 1600 920" role="img" aria-labelledby="title desc">
+  <title id="title">OBOA operations overview flow</title>
+  <desc id="desc">High-level OBOA operation flow from command entry points through configuration, daemon polling, engine orchestration, archive delegation, processor staging, and PostgreSQL inventory.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f8fafc; }
+      .box { fill: #fff; stroke: #304c62; stroke-width: 2; }
+      .blue { fill: #e8f2ff; stroke: #2c6aa0; }
+      .green { fill: #e8f7ef; stroke: #2f7d55; }
+      .amber { fill: #fff6df; stroke: #a56a13; }
+      .gray { fill: #eef2f5; stroke: #596b7a; }
+      .red { fill: #fff0ef; stroke: #a33b32; }
+      .title { font-family: Arial, Helvetica, sans-serif; font-size: 34px; font-weight: 700; fill: #1d2c38; }
+      .text { font-family: Arial, Helvetica, sans-serif; font-size: 18px; fill: #1f2d38; }
+      .small { font-family: Arial, Helvetica, sans-serif; font-size: 15px; fill: #435363; }
+      .section { font-family: Arial, Helvetica, sans-serif; font-size: 20px; font-weight: 700; fill: #243746; }
+      .arrow { stroke: #304c62; stroke-width: 3; fill: none; marker-end: url(#arrowhead); }
+      .arrow-soft { stroke: #7b8a98; stroke-width: 2.5; fill: none; stroke-dasharray: 8 6; marker-end: url(#arrowhead-soft); }
+    </style>
+    <marker id="arrowhead" markerWidth="14" markerHeight="10" refX="12" refY="5" orient="auto">
+      <path d="M0,0 L14,5 L0,10 Z" fill="#304c62"/>
+    </marker>
+    <marker id="arrowhead-soft" markerWidth="14" markerHeight="10" refX="12" refY="5" orient="auto">
+      <path d="M0,0 L14,5 L0,10 Z" fill="#7b8a98"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="1600" height="920"/>
+  <text class="title" x="70" y="72">OBOA Operations Overview</text>
+  <text class="small" x="70" y="104">Entry points converge on the engine, which applies configuration, delegates archive storage, stages processor inputs, and persists inventory.</text>
+
+  <rect class="box blue" x="70" y="165" width="260" height="285" rx="12"/>
+  <text class="section" x="105" y="205">Command API</text>
+  <text class="text" x="105" y="245">oboa_init</text>
+  <text class="text" x="105" y="275">oboa_configure</text>
+  <text class="text" x="105" y="305">oboa_orchestrate</text>
+  <text class="text" x="105" y="335">oboa_poll</text>
+  <text class="text" x="105" y="365">oboa_daemon</text>
+  <text class="text" x="105" y="395">oboa_query</text>
+
+  <rect class="box gray" x="70" y="560" width="260" height="135" rx="12"/>
+  <text class="section" x="105" y="600">Runtime Config</text>
+  <text class="small" x="105" y="630">engine.json and environment</text>
+  <text class="small" x="105" y="654">polling, daemon, processing</text>
+
+  <rect class="box blue" x="430" y="165" width="280" height="95" rx="12"/>
+  <text class="text" x="485" y="205">Daemon Manager</text>
+  <text class="small" x="485" y="230">PID lifecycle and signals</text>
+
+  <rect class="box amber" x="430" y="350" width="280" height="125" rx="12"/>
+  <text class="text" x="500" y="390">Polling Loop</text>
+  <text class="small" x="500" y="415">scan input folder</text>
+  <text class="small" x="500" y="438">order ready files</text>
+
+  <rect class="box amber" x="430" y="560" width="280" height="135" rx="12"/>
+  <text class="text" x="500" y="600">Input Folder</text>
+  <text class="small" x="500" y="630">visible stable files</text>
+  <text class="small" x="500" y="654">temporary files skipped</text>
+
+  <rect class="box" x="800" y="300" width="300" height="220" rx="12"/>
+  <text class="section" x="845" y="345">OBOA Engine</text>
+  <text class="text" x="845" y="385">configure rules</text>
+  <text class="text" x="845" y="415">orchestrate files</text>
+  <text class="text" x="845" y="445">record failures</text>
+  <text class="text" x="845" y="475">query inventory</text>
+
+  <rect class="box green" x="1220" y="185" width="270" height="115" rx="12"/>
+  <text class="text" x="1265" y="228">ABOA Archive</text>
+  <text class="small" x="1265" y="254">archive_file with metadata</text>
+
+  <rect class="box green" x="1220" y="370" width="270" height="115" rx="12"/>
+  <text class="text" x="1265" y="413">Processing Folder</text>
+  <text class="small" x="1265" y="439">hard-link or copy</text>
+
+  <rect class="box gray" x="1220" y="575" width="270" height="205" rx="12"/>
+  <text class="section" x="1265" y="617">PostgreSQL</text>
+  <text class="small" x="1265" y="649">orchestration_configurations</text>
+  <text class="small" x="1265" y="674">orchestrated_files</text>
+  <text class="small" x="1265" y="699">orchestration_operations</text>
+
+  <rect class="box red" x="800" y="700" width="300" height="95" rx="12"/>
+  <text class="text" x="845" y="742">Typed Errors</text>
+  <text class="small" x="845" y="768">record failures before raising</text>
+
+  <path class="arrow" d="M330 215 H430"/>
+  <path class="arrow" d="M570 260 V350"/>
+  <path class="arrow" d="M570 560 V475"/>
+  <path class="arrow" d="M710 412 H800"/>
+  <path class="arrow" d="M330 628 H760 V350 H800"/>
+  <path class="arrow" d="M330 335 H760 V410 H800"/>
+  <path class="arrow" d="M1100 355 H1160 V242 H1220"/>
+  <path class="arrow" d="M1100 425 H1220"/>
+  <path class="arrow" d="M1100 490 H1160 V678 H1220"/>
+  <path class="arrow-soft" d="M330 395 H1180 V678 H1220"/>
+  <path class="arrow-soft" d="M950 520 V700"/>
+</svg>

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1200" viewBox="0 0 1500 1200" role="img" aria-labelledby="title desc">
+  <title id="title">OBOA configuration activation flow</title>
+  <desc id="desc">Validation and activation of an OBOA orchestration XML configuration.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f8fafc; }
+      .box { fill: #fff; stroke: #304c62; stroke-width: 2; }
+      .input { fill: #e8f2ff; stroke: #2c6aa0; }
+      .validate { fill: #fff6df; stroke: #a56a13; }
+      .store { fill: #e8f7ef; stroke: #2f7d55; }
+      .error { fill: #fff0ef; stroke: #a33b32; }
+      .diamond { fill: #fff; stroke: #304c62; stroke-width: 2; }
+      .title { font-family: Arial, Helvetica, sans-serif; font-size: 34px; font-weight: 700; fill: #1d2c38; }
+      .text { font-family: Arial, Helvetica, sans-serif; font-size: 18px; fill: #1f2d38; }
+      .small { font-family: Arial, Helvetica, sans-serif; font-size: 15px; fill: #435363; }
+      .label { font-family: Arial, Helvetica, sans-serif; font-size: 15px; font-weight: 700; fill: #273846; }
+      .arrow { stroke: #304c62; stroke-width: 3; fill: none; marker-end: url(#arrowhead); }
+      .arrow-red { stroke: #a33b32; stroke-width: 3; fill: none; marker-end: url(#arrowhead-red); }
+    </style>
+    <marker id="arrowhead" markerWidth="14" markerHeight="10" refX="12" refY="5" orient="auto">
+      <path d="M0,0 L14,5 L0,10 Z" fill="#304c62"/>
+    </marker>
+    <marker id="arrowhead-red" markerWidth="14" markerHeight="10" refX="12" refY="5" orient="auto">
+      <path d="M0,0 L14,5 L0,10 Z" fill="#a33b32"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="1500" height="1200"/>
+  <text class="title" x="70" y="72">Configuration Activation Flow</text>
+  <text class="small" x="70" y="104">A configuration becomes active only after XML, schema, rule, and processor checks pass.</text>
+
+  <rect class="box input" x="550" y="145" width="400" height="80" rx="12"/>
+  <text class="text" x="610" y="179">Operator runs oboa_configure</text>
+  <text class="small" x="610" y="203">default or explicit XML path</text>
+
+  <rect class="box input" x="550" y="270" width="400" height="80" rx="12"/>
+  <text class="text" x="635" y="304">Load XML file</text>
+  <text class="small" x="635" y="328">read orchestration rules</text>
+
+  <polygon class="diamond validate" points="750,390 930,460 750,530 570,460"/>
+  <text class="text" x="678" y="452">XML exists and</text>
+  <text class="text" x="690" y="476">is well formed?</text>
+
+  <rect class="box validate" x="550" y="580" width="400" height="80" rx="12"/>
+  <text class="text" x="625" y="614">Validate against XSD</text>
+  <text class="small" x="625" y="638">structure and positive priority</text>
+
+  <polygon class="diamond validate" points="750,700 930,770 750,840 570,770"/>
+  <text class="text" x="675" y="762">Rules accepted?</text>
+  <text class="small" x="650" y="786">group, priority, processor executable</text>
+
+  <rect class="box store" x="550" y="890" width="400" height="80" rx="12"/>
+  <text class="text" x="635" y="924">Compare content checksum</text>
+  <text class="small" x="635" y="948">active row vs XML content</text>
+
+  <polygon class="diamond store" points="750,1010 930,1080 750,1150 570,1080"/>
+  <text class="text" x="665" y="1072">Content changed?</text>
+
+  <rect class="box store" x="1010" y="1040" width="360" height="80" rx="12"/>
+  <text class="text" x="1060" y="1074">Reuse active row</text>
+  <text class="small" x="1060" y="1098">no success operation row</text>
+
+  <rect class="box store" x="140" y="1040" width="360" height="80" rx="12"/>
+  <text class="text" x="185" y="1074">Create new active row</text>
+  <text class="small" x="185" y="1098">deactivate previous active rows</text>
+
+  <rect class="box error" x="1010" y="420" width="360" height="90" rx="12"/>
+  <text class="text" x="1055" y="454">Record configure failure</text>
+  <text class="small" x="1055" y="478">rollback session and raise error</text>
+
+  <rect class="box error" x="1010" y="730" width="360" height="90" rx="12"/>
+  <text class="text" x="1055" y="764">Reject configuration</text>
+  <text class="small" x="1055" y="788">reserved group or invalid processor</text>
+
+  <path class="arrow" d="M750 225 V270"/>
+  <path class="arrow" d="M750 350 V390"/>
+  <path class="arrow" d="M750 530 V580"/>
+  <path class="arrow" d="M750 660 V700"/>
+  <path class="arrow" d="M750 840 V890"/>
+  <path class="arrow" d="M750 970 V1010"/>
+  <path class="arrow" d="M570 1080 H500"/>
+  <path class="arrow" d="M930 1080 H1010"/>
+  <path class="arrow-red" d="M930 460 H1010"/>
+  <path class="arrow-red" d="M930 770 H1010"/>
+  <text class="label" x="765" y="557">yes</text>
+  <text class="label" x="765" y="867">yes</text>
+  <text class="label" x="955" y="445">no</text>
+  <text class="label" x="955" y="755">no</text>
+  <text class="label" x="515" y="1065">yes</text>
+  <text class="label" x="955" y="1065">no</text>
+</svg>

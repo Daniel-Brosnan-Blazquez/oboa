@@ -1,0 +1,1 @@
+Persistent input used by the optional real ABOA archive integration test.

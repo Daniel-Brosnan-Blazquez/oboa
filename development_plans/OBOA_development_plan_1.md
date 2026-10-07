@@ -21,7 +21,7 @@ Use this architecture for the first OBOA version:
 - Keep code separated by concern: `datamodel`, `engine`, `processors`,
   `scripts`, `config`, `schemas`, database model artifacts, and `tests`.
 - Use SQLAlchemy declarative models in `oboa.datamodel`, with `Base`,
-  `Session`, and the SQLAlchemy engine initialized from `src/config/datamodel.json`.
+  `Session`, and the SQLAlchemy engine initialized from `src/oboa/config/datamodel.json`.
 - Use a high-level `Engine` class for mutation workflows: configuration loading,
   file orchestration, polling, processor execution, and ABOA archive delegation.
 - Use a `Query` class for read-only inventory access and filtering.
@@ -139,7 +139,7 @@ orchestrated files is delegated to ABOA by default.
 
 ### 3.1 Datamodel JSON
 
-Create `src/config/datamodel.json` with the standard `DDBB_CONFIGURATION`
+Create `src/oboa/config/datamodel.json` with the standard `DDBB_CONFIGURATION`
 structure:
 
 ```json
@@ -162,7 +162,7 @@ Support practical database overrides:
 
 ### 3.2 Engine JSON
 
-Create `src/config/engine.json` with logging settings and the polling
+Create `src/oboa/config/engine.json` with logging settings and the polling
 configuration required by OBOA:
 
 ```json
@@ -176,10 +176,13 @@ configuration required by OBOA:
     "polling_dir": "/oboa_polling",
     "polling_frequency": 30,
     "delete_after_archive": true,
-    "processing_dir": "/oboa_processing"
+    "processing_dir": "/oboa_processing",
+    "error_dir": "/oboa_error"
   },
   "DAEMON": {
-    "pid_file": "/tmp/oboa.pid"
+    "pid_file": "/tmp/oboa.pid",
+    "database_startup_attempts": 30,
+    "database_startup_wait_seconds": 2
   }
 }
 ```
@@ -188,7 +191,11 @@ configuration required by OBOA:
 `delete_after_archive` option controls whether successfully archived files are
 removed from the input directory. The `processing_dir` option configures the
 internal folder used to stage files that match an orchestration rule with a
-configured data processor.
+configured data processor. The `error_dir` option configures the folder where
+inputs are moved when the file has been accepted into OBOA inventory but cannot
+be archived. Failed inputs use the date-based layout
+`error_dir/<YEAR>/<MONTH>/<DAY>/<original_name>`, with a UUID suffix added to
+the file name when needed to avoid overwriting an existing failed input.
 
 Support environment overrides:
 
@@ -202,8 +209,15 @@ Support environment overrides:
 - `OBOA_POLLING_FREQUENCY`: override `ORCHESTRATION.polling_frequency`.
 - `OBOA_DELETE_AFTER_ARCHIVE`: override `ORCHESTRATION.delete_after_archive`.
 - `OBOA_PROCESSING_DIR`: override `ORCHESTRATION.processing_dir`.
+- `OBOA_ERROR_DIR`: override `ORCHESTRATION.error_dir`.
 - `OBOA_CONFIGURATION_PATH`: optional explicit XML configuration path.
 - `OBOA_DAEMON_PID_FILE`: override `DAEMON.pid_file`.
+- `OBOA_DAEMON_DATABASE_STARTUP_ATTEMPTS`: override
+  `DAEMON.database_startup_attempts`.
+- `OBOA_DAEMON_DATABASE_STARTUP_WAIT_SECONDS`: override
+  `DAEMON.database_startup_wait_seconds`.
+- `OBOA_DDBB_STARTUP_ATTEMPTS` and `OBOA_DDBB_STARTUP_WAIT_SECONDS`: accepted
+  aliases for the daemon database readiness retry settings.
 
 ABOA must also be configured in the runtime environment because OBOA delegates
 the default archive flow to ABOA. In Docker and CI, set the ABOA resource,
@@ -213,8 +227,8 @@ schema, log, archive root, and database settings alongside the OBOA variables.
 
 Design the PostgreSQL model in pgModeler and export both:
 
-- `src/datamodel/oboa_data_model.dbm`
-- `src/datamodel/oboa_data_model.sql`
+- `src/oboa/datamodel/oboa_data_model.dbm`
+- `src/oboa/datamodel/oboa_data_model.sql`
 
 Implement matching SQLAlchemy entities in
 `oboa.datamodel.orchestrated_files`.
@@ -257,9 +271,10 @@ Implement matching SQLAlchemy entities in
 - `message`: nullable text.
 - `file_uuid`: nullable FK to `orchestrated_files`.
 
-OBOA should persist both success and failure operations. OBOA is an orchestrator,
-and its operation table is the durable audit trail for what the polling engine
-did with each file.
+OBOA should persist only failed operations. Successful configuration,
+orchestration, archive, and processing outcomes are represented by the current
+state of the configuration and file inventory tables, while the operation table
+is the durable failure audit trail.
 
 ### 4.2 Model Conventions
 
@@ -295,7 +310,7 @@ OBOA accepts orchestration configuration XML with this required shape:
 
 ### 5.1 XSD Rules
 
-Create `src/schemas/oboa_orchestrator_configuration.xsd` with these rules:
+Create `src/oboa/schemas/oboa_orchestrator_configuration.xsd` with these rules:
 
 - Root element is `orchestrator_configuration`.
 - It contains zero or more `data` elements.
@@ -324,12 +339,11 @@ configuration entry point:
 - Parse with `lxml.etree.parse`.
 - Validate against `oboa_orchestrator_configuration.xsd`.
 - Run the runtime validation rules.
-- Return an `lxml.etree.XPathEvaluator` or a small parsed structure that keeps
-  the XML order, priority, group, mask, and processor path.
-
-Prefer returning a parsed list of rules for orchestration matching because
-priority ordering is central to OBOA. If XPath is still returned for consistency,
-provide a helper that converts XPath nodes into ordered rule dictionaries.
+- Normalize relative `data_processor` paths directly in the parsed XML nodes.
+- Register the OBOA XPath extension functions.
+- Return an `lxml.etree.XPathEvaluator` for the parsed XML configuration. The
+  engine must work with the returned XML elements directly; it must not create a
+  parallel rule-dictionary structure for orchestration.
 
 ## 6. Orchestration Engine Plan
 
@@ -351,7 +365,7 @@ Implement `oboa.engine.engine.Engine` as the main mutation interface.
   foreground=False)`: run the polling loop as a managed daemon process or as a
   foreground long-running process.
 - `orchestrate_file(file_path, reception_date=None)`: classify, stage processor
-  inputs, archive, process, inventory, and record operations for one file.
+  inputs, archive, process, inventory, and record failures for one file.
 - `prepare_processing_file(file_path, orchestrated_file)`: hard-link or copy a
   processor-backed file into the configured internal processing directory.
 - `close_session()`: close the SQLAlchemy session.
@@ -379,7 +393,8 @@ Define an `exit_codes` dictionary in `engine.py`:
 - `DAEMON_FAILED`: daemon startup, shutdown, or runtime management failed.
 - `ORCHESTRATION_FAILED`: unexpected orchestration failure.
 
-Use these status codes in `orchestration_operations` and CLI exits.
+Use non-zero status codes in `orchestration_operations` and all status codes for
+CLI exits.
 
 ### 6.3 Polling Behavior
 
@@ -397,9 +412,10 @@ Use these status codes in `orchestration_operations` and CLI exits.
 - Skip files that already have an `orchestrated_files` row with the same path and
   `archived=True`, unless the file still exists because the previous archive
   delete step failed. In that case, record an operation and retry archive cleanup.
-- Apply `delete_after_archive` only after ABOA archive success. Files that
-  fail archiving must remain in the input directory for operator inspection or a
-  later retry.
+- Apply `delete_after_archive` only after ABOA archive success. Files that fail
+  after they have been accepted into OBOA inventory must be moved out of the
+  input directory into the configured `error_dir` so polling does not orchestrate
+  the same failed file repeatedly.
 
 `run_polling_loop()` should:
 
@@ -420,6 +436,10 @@ OBOA shall run as a daemon for production operation.
 - Store the daemon PID in `DAEMON.pid_file`, overridable with
   `OBOA_DAEMON_PID_FILE` and CLI `--pid-file`.
 - Reject a second daemon start when the PID file points to a running OBOA process.
+- Before forking or entering foreground mode, validate required runtime folders
+  and wait for the OBOA PostgreSQL database to accept connections. If the
+  database remains unavailable after the configured retry budget, fail startup
+  with a controlled `DaemonError`.
 - Remove stale PID files when the recorded process no longer exists.
 - Handle `SIGTERM` and `SIGINT` by finishing the current file operation when
   possible, closing database sessions, closing the ABOA client, removing the PID
@@ -434,8 +454,10 @@ OBOA shall run as a daemon for production operation.
 `orchestrate_file()` should:
 
 - Load and persist the active orchestration configuration before matching files.
-- Match the input file name against `data_mask` values using `fnmatch`.
-- Evaluate rules by ascending `priority`.
+- Match the input file name against `data_mask` values using the lxml XPath
+  evaluator and the registered `match(data_mask, $file_name)` function.
+- Evaluate matching XML `data` elements by ascending `priority`, preserving XML
+  order for equal priorities.
 - Assign the first matching rule's `group`.
 - Assign `unknown` when no rule matches. Unknown files must still be archived
   through ABOA and must not run any data processor.
@@ -449,6 +471,10 @@ OBOA shall run as a daemon for production operation.
 - Archive the original input path through ABOA. If
   `delete_after_archive` is enabled, allow ABOA or the OBOA cleanup step to
   delete the input file only after archive success.
+- If archive delegation fails, move the original input to
+  `error_dir/<YEAR>/<MONTH>/<DAY>/<original_name>`, leave `archived=False`, and
+  record the archive failure. If the destination file already exists, append a
+  UUID suffix to the file name before moving the failed input.
 - Run the configured data processor against the staged processing path, not the
   input path. This preserves a processor-readable payload even when the input file
   has been deleted from the polling directory.
@@ -485,7 +511,7 @@ Implement processor helpers in `oboa.processors.base_processor` or
 - Treat exit code `0` as success.
 - Treat any non-zero exit code, timeout, or execution exception as a processor
   failure.
-- Store a `process` operation row for both success and failure.
+- Store a `process` operation row only for failures.
 - Processor failure must not undo a successful archive. It should leave the
   staged processing payload in place for inspection or a later reprocessing
   workflow.
@@ -588,14 +614,14 @@ queries with `eval`.
 
 ## 8. Command Line API Plan
 
-Install command wrappers under `src/scripts` and command implementations under
+Install command wrappers under `src/oboa/scripts` and command implementations under
 `oboa.engine.commands`.
 
 ### 8.1 Commands
 
 `oboa_init`
 
-- Initialize the OBOA database from `src/datamodel/oboa_data_model.sql`.
+- Initialize the OBOA database from `src/oboa/datamodel/oboa_data_model.sql`.
 - Provide `-f` for the datamodel path and `-y` for destructive confirmation.
 
 `oboa_configure`
@@ -778,7 +804,9 @@ Cover:
   fails.
 - Data processors receive the staged processing path instead of the input path.
 - ABOA archive success sets `archived=True`.
-- ABOA archive failure sets `archived=False` and records an `archive` failure.
+- ABOA archive failure sets `archived=False`, records an `archive` failure, and
+  moves the input file to the configured error folder under
+  `YEAR/MONTH/DAY/file`.
 - `delete_after_archive=True` removes the input file only after archive success.
 - `delete_after_archive=False` keeps the input file after archive success.
 - A processor-backed file remains available in the internal processing directory
@@ -817,6 +845,8 @@ Cover:
 - `oboa_poll --once` prints a JSON list of orchestrated files.
 - `oboa_daemon status` reports stopped and running states.
 - `oboa_daemon --foreground` runs the same polling loop without forking.
+- `oboa_daemon start` waits for database readiness and fails cleanly when the
+  database is still unavailable after the retry budget.
 - `oboa_query --files`, `--configurations`, and `--operations`.
 - CLI session cleanup after success and failure.
 
@@ -898,7 +928,7 @@ Cover:
   and `src/setup.py`, Docker, and CI install ABOA as an OBOA runtime dependency.
 - Requirements 3 and 4: SQLAlchemy/PostgreSQL inventory configured through
   `datamodel.json`.
-- Requirement 5: pgModeler artifacts stored in `src/datamodel`.
+- Requirement 5: pgModeler artifacts stored in `src/oboa/datamodel`.
 - Requirement 6: PostgreSQL tables `orchestration_configurations`,
   `orchestrated_files`, and `orchestration_operations`.
 - Requirement 7: `OrchestratedFile` entity includes file UUID, name, path, group,

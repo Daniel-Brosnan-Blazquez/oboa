@@ -31,10 +31,11 @@ RUN mkdir /log \
     /datamodel \
     /oboa_polling \
     /oboa_processing \
+    /oboa_error \
     /oboa \
     /aboa
 
-RUN chown -R boa:boa /log /resources_path /schemas /datamodel /oboa_polling /oboa_processing /oboa /aboa
+RUN chown -R boa:boa /log /resources_path /schemas /datamodel /oboa_polling /oboa_processing /oboa_error /oboa /aboa
 
 RUN mkdir /usr/local/python-packages
 RUN chown -R boa:boa /usr/local/python-packages
@@ -48,13 +49,14 @@ RUN pip3 install --target=/usr/local/python-packages \
     "pytest-cov==7.0.0"
 
 ENV PYTHONPATH=/oboa/src:/aboa/src:/usr/local/python-packages
-ENV PATH="/oboa/src/scripts:/usr/local/python-packages/bin:${PATH}"
+ENV PATH="/oboa/src/oboa/scripts:/usr/local/python-packages/bin:${PATH}"
 
-ENV OBOA_RESOURCES_PATH=/oboa/src/config
+ENV OBOA_RESOURCES_PATH=/oboa/src/oboa/config
 ENV OBOA_LOG_PATH=/log
-ENV OBOA_SCHEMAS_PATH=/oboa/src/schemas
+ENV OBOA_SCHEMAS_PATH=/oboa/src/oboa/schemas
 ENV OBOA_POLLING_DIR=/oboa_polling
 ENV OBOA_PROCESSING_DIR=/oboa_processing
+ENV OBOA_ERROR_DIR=/oboa_error
 ENV OBOA_DAEMON_PID_FILE=/tmp/oboa.pid
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV LC_ALL=en_US.utf-8
@@ -65,6 +67,6 @@ WORKDIR /oboa
 USER boa
 
 # Install datamodel
-RUN ln -s /oboa/src/datamodel/oboa_data_model.sql /datamodel
+RUN ln -s /oboa/src/oboa/datamodel/oboa_data_model.sql /datamodel
 
-CMD ["/bin/bash", "-c", "/oboa/src/scripts/start_oboa.sh"]
+CMD ["/bin/bash", "-c", "/oboa/src/oboa/scripts/start_oboa.sh"]

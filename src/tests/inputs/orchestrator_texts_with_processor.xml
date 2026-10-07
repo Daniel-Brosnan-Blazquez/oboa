@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<orchestrator_configuration>
+  <data group="texts" priority="1">
+    <data_mask>*.txt</data_mask>
+    <data_processor>processor_success.sh</data_processor>
+  </data>
+</orchestrator_configuration>

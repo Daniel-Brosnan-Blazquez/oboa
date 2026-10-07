@@ -1,0 +1,4 @@
+recursive-include oboa/config *.json *.xml
+recursive-include oboa/datamodel *.sql *.dbm
+recursive-include oboa/schemas *.xsd
+recursive-include oboa/scripts *.sh

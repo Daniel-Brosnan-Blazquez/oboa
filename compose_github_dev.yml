@@ -12,8 +12,12 @@ services:
    oboa:
       build:
          context: .
-         dockerfile: Dockerfile.dev
+         dockerfile: Dockerfile.github.dev
          args:
+            REPOSITORY_URI: ${REPOSITORY_URI}
+            GITHUB_BRANCH: ${GITHUB_BRANCH}
+            ABOA_REPOSITORY_URI: ${ABOA_REPOSITORY_URI:-}
+            ABOA_GITHUB_BRANCH: ${ABOA_GITHUB_BRANCH:-main}
             UID_HOST_USER: ${UID_HOST_USER:-1000}
             GID_HOST_USER: ${GID_HOST_USER:-1000}
       container_name: oboa
@@ -22,16 +26,6 @@ services:
       user: "${UID_HOST_USER:-1000}:${GID_HOST_USER:-1000}"
       environment:
          - OBOA_DDBB_HOST=oboa_db
-         - OBOA_RESOURCES_PATH=/oboa/src/oboa/config
-         - OBOA_LOG_PATH=/log
-         - OBOA_SCHEMAS_PATH=/oboa/src/oboa/schemas
-         - OBOA_POLLING_DIR=/oboa_polling
-         - OBOA_PROCESSING_DIR=/oboa_processing
-         - OBOA_ERROR_DIR=/oboa_error
-         - OBOA_DAEMON_PID_FILE=/tmp/oboa.pid
-         - PYTHONDONTWRITEBYTECODE=1
-      volumes:
-         - .:/oboa:rw
       shm_size: 512M
       networks:
          - boa_network

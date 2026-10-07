@@ -1,0 +1,83 @@
+# Base the image on Rocky Linux (Red Hat compatible)
+FROM rockylinux:9
+
+ARG REPOSITORY_URI
+ARG GITHUB_BRANCH
+ARG ABOA_REPOSITORY_URI=""
+ARG ABOA_GITHUB_BRANCH="main"
+ARG UID_HOST_USER=1000
+ARG GID_HOST_USER=1000
+
+USER root
+
+RUN groupadd -o -g ${GID_HOST_USER} boa && useradd -m -o -r -u ${UID_HOST_USER} -g boa boa
+
+RUN yum install -y epel-release
+
+RUN yum install --allowerasing -y \
+    git \
+    glibc-langpack-en \
+    less \
+    make \
+    postgresql \
+    postgresql-devel \
+    procps \
+    python3 \
+    python3-devel \
+    python3-pip \
+    redhat-rpm-config \
+    which
+
+RUN pip3 install wheel
+
+RUN mkdir /log \
+    /scripts \
+    /resources_path \
+    /schemas \
+    /datamodel \
+    /oboa_polling \
+    /oboa_processing \
+    /oboa_error \
+    /oboa \
+    /aboa
+
+RUN chown -R boa:boa /log /scripts /resources_path /schemas /datamodel /oboa_polling /oboa_processing /oboa_error /oboa /aboa
+
+RUN mkdir /usr/local/python-packages
+RUN chown -R boa:boa /usr/local/python-packages
+
+ENV PYTHONPATH=/usr/local/python-packages
+ENV PATH="/usr/local/python-packages/bin:${PATH}"
+
+USER boa
+
+RUN git clone --branch ${GITHUB_BRANCH} ${REPOSITORY_URI} /oboa
+
+# Install ABOA before OBOA because OBOA delegates archiving to ABOA.
+RUN if [ -n "${ABOA_REPOSITORY_URI}" ]; then \
+      git clone --branch ${ABOA_GITHUB_BRANCH} ${ABOA_REPOSITORY_URI} /aboa_src && \
+      pip3 install --use-pep517 --target=/usr/local/python-packages "/aboa_src/src"; \
+    else \
+      pip3 install --target=/usr/local/python-packages "aboa==0.1.0"; \
+    fi
+RUN pip3 install --use-pep517 --target=/usr/local/python-packages "/oboa/src[tests]"
+
+RUN cp /oboa/src/oboa/config/*.json /oboa/src/oboa/config/*.xml /resources_path
+RUN cp /oboa/src/oboa/scripts/*.py /scripts
+RUN cp /oboa/src/oboa/scripts/*.sh /scripts
+RUN cp /oboa/src/oboa/datamodel/oboa_data_model.sql /datamodel
+RUN cp /oboa/src/oboa/datamodel/oboa_data_model.dbm /datamodel
+RUN cp /oboa/src/oboa/schemas/*.xsd /schemas
+
+ENV OBOA_RESOURCES_PATH=/resources_path
+ENV OBOA_LOG_PATH=/log
+ENV OBOA_SCHEMAS_PATH=/schemas
+ENV OBOA_POLLING_DIR=/oboa_polling
+ENV OBOA_PROCESSING_DIR=/oboa_processing
+ENV OBOA_ERROR_DIR=/oboa_error
+ENV OBOA_DAEMON_PID_FILE=/tmp/oboa.pid
+ENV LC_ALL=en_US.utf-8
+ENV LANG=en_US.utf-8
+ENV PATH="${PATH}:/scripts:/usr/local/python-packages/bin"
+
+CMD ["/bin/bash", "-c", "/scripts/start_oboa.sh"]

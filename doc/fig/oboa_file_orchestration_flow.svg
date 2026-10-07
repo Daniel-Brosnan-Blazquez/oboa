@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1700" height="1740" viewBox="0 0 1700 1740" role="img" aria-labelledby="title desc">
+  <title id="title">OBOA single file orchestration flow</title>
+  <desc id="desc">Single-file OBOA orchestration with rule matching, inventory creation, optional processor staging, ABOA archive delegation, optional input deletion, processor execution, and failure recording.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f8fafc; }
+      .box { fill: #fff; stroke: #304c62; stroke-width: 2; }
+      .blue { fill: #e8f2ff; stroke: #2c6aa0; }
+      .green { fill: #e8f7ef; stroke: #2f7d55; }
+      .amber { fill: #fff6df; stroke: #a56a13; }
+      .gray { fill: #eef2f5; stroke: #596b7a; }
+      .red { fill: #fff0ef; stroke: #a33b32; }
+      .diamond { fill: #fff; stroke: #304c62; stroke-width: 2; }
+      .title { font-family: Arial, Helvetica, sans-serif; font-size: 34px; font-weight: 700; fill: #1d2c38; }
+      .text { font-family: Arial, Helvetica, sans-serif; font-size: 18px; fill: #1f2d38; }
+      .small { font-family: Arial, Helvetica, sans-serif; font-size: 15px; fill: #435363; }
+      .label { font-family: Arial, Helvetica, sans-serif; font-size: 15px; font-weight: 700; fill: #273846; }
+      .arrow { stroke: #304c62; stroke-width: 3; fill: none; marker-end: url(#arrowhead); }
+      .arrow-red { stroke: #a33b32; stroke-width: 3; fill: none; marker-end: url(#arrowhead-red); }
+      .arrow-soft { stroke: #7b8a98; stroke-width: 2.5; fill: none; stroke-dasharray: 8 6; marker-end: url(#arrowhead-soft); }
+    </style>
+    <marker id="arrowhead" markerWidth="14" markerHeight="10" refX="12" refY="5" orient="auto">
+      <path d="M0,0 L14,5 L0,10 Z" fill="#304c62"/>
+    </marker>
+    <marker id="arrowhead-red" markerWidth="14" markerHeight="10" refX="12" refY="5" orient="auto">
+      <path d="M0,0 L14,5 L0,10 Z" fill="#a33b32"/>
+    </marker>
+    <marker id="arrowhead-soft" markerWidth="14" markerHeight="10" refX="12" refY="5" orient="auto">
+      <path d="M0,0 L14,5 L0,10 Z" fill="#7b8a98"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="1700" height="1740"/>
+  <text class="title" x="70" y="72">Single File Orchestration Flow</text>
+  <text class="small" x="70" y="104">Used by oboa_orchestrate and by each ready file selected during a polling pass.</text>
+
+  <rect class="box blue" x="580" y="145" width="360" height="70" rx="12"/>
+  <text class="text" x="635" y="179">orchestrate_file(file_path)</text>
+  <text class="small" x="635" y="201">set reception date</text>
+
+  <polygon class="diamond blue" points="760,255 920,325 760,395 600,325"/>
+  <text class="text" x="702" y="318">Input exists?</text>
+
+  <rect class="box red" x="1080" y="285" width="360" height="80" rx="12"/>
+  <text class="text" x="1125" y="319">Record missing file</text>
+  <text class="small" x="1125" y="343">raise orchestration error</text>
+
+  <rect class="box blue" x="580" y="445" width="360" height="70" rx="12"/>
+  <text class="text" x="635" y="479">Load active configuration</text>
+  <text class="small" x="635" y="501">validate and activate XML</text>
+
+  <rect class="box red" x="1080" y="440" width="360" height="80" rx="12"/>
+  <text class="text" x="1125" y="474">Record configure failure</text>
+  <text class="small" x="1125" y="498">raise configuration error</text>
+
+  <polygon class="diamond blue" points="760,560 920,630 760,700 600,630"/>
+  <text class="text" x="702" y="623">Rule matches?</text>
+
+  <rect class="box amber" x="300" y="750" width="330" height="78" rx="12"/>
+  <text class="text" x="345" y="782">Configured group</text>
+  <text class="small" x="345" y="806">processor may be configured</text>
+
+  <rect class="box amber" x="890" y="750" width="330" height="78" rx="12"/>
+  <text class="text" x="935" y="782">Unknown group</text>
+  <text class="small" x="935" y="806">processed starts true</text>
+
+  <rect class="box gray" x="580" y="880" width="360" height="78" rx="12"/>
+  <text class="text" x="625" y="912">Create file inventory row</text>
+  <text class="small" x="625" y="936">no success operation row</text>
+
+  <polygon class="diamond amber" points="760,1000 920,1070 760,1140 600,1070"/>
+  <text class="text" x="662" y="1063">Processor configured?</text>
+
+  <rect class="box amber" x="240" y="1030" width="300" height="80" rx="12"/>
+  <text class="text" x="280" y="1064">Stage file</text>
+  <text class="small" x="280" y="1088">hard-link or copy internally</text>
+
+  <rect class="box red" x="240" y="1160" width="300" height="80" rx="12"/>
+  <text class="text" x="280" y="1194">Record staging failure</text>
+  <text class="small" x="280" y="1218">move input to error folder</text>
+
+  <rect class="box green" x="580" y="1210" width="360" height="80" rx="12"/>
+  <text class="text" x="625" y="1244">Archive original via ABOA</text>
+  <text class="small" x="625" y="1268">metadata includes file_group</text>
+
+  <rect class="box red" x="1080" y="1210" width="360" height="80" rx="12"/>
+  <text class="text" x="1125" y="1244">Record archive failure</text>
+  <text class="small" x="1125" y="1268">move input to error folder</text>
+
+  <polygon class="diamond green" points="760,1330 920,1390 760,1450 600,1390"/>
+  <text class="text" x="660" y="1383">Delete after archive?</text>
+
+  <rect class="box green" x="240" y="1350" width="300" height="80" rx="12"/>
+  <text class="text" x="280" y="1384">Delete input file</text>
+  <text class="small" x="280" y="1408">only after archive succeeds</text>
+
+  <polygon class="diamond amber" points="760,1480 920,1540 760,1600 600,1540"/>
+  <text class="text" x="675" y="1533">Processor staged?</text>
+
+  <rect class="box amber" x="1080" y="1500" width="360" height="80" rx="12"/>
+  <text class="text" x="1125" y="1534">Execute processor</text>
+  <text class="small" x="1125" y="1558">record failure only</text>
+
+  <rect class="box gray" x="580" y="1660" width="360" height="50" rx="12"/>
+  <text class="text" x="640" y="1693">Return inventory row</text>
+
+  <path class="arrow" d="M760 215 V255"/>
+  <path class="arrow-red" d="M920 325 H1080"/>
+  <path class="arrow" d="M760 395 V445"/>
+  <path class="arrow-red" d="M940 480 H1080"/>
+  <path class="arrow" d="M760 515 V560"/>
+  <path class="arrow" d="M600 630 H465 V750"/>
+  <path class="arrow" d="M920 630 H1055 V750"/>
+  <path class="arrow" d="M465 828 V855 H760 V880"/>
+  <path class="arrow" d="M1055 828 V855 H760 V880"/>
+  <path class="arrow" d="M760 958 V1000"/>
+  <path class="arrow" d="M600 1070 H540"/>
+  <path class="arrow-red" d="M390 1110 V1160"/>
+  <path class="arrow" d="M540 1070 H560 V1250 H580"/>
+  <path class="arrow" d="M760 1140 V1210"/>
+  <path class="arrow-red" d="M940 1250 H1080"/>
+  <path class="arrow" d="M760 1290 V1330"/>
+  <path class="arrow" d="M600 1390 H540"/>
+  <path class="arrow" d="M390 1430 V1540 H600"/>
+  <path class="arrow" d="M760 1450 V1480"/>
+  <path class="arrow" d="M920 1540 H1080"/>
+  <path class="arrow" d="M760 1600 V1660"/>
+  <path class="arrow" d="M1260 1580 V1685 H940"/>
+
+  <text class="label" x="930" y="310">no</text>
+  <text class="label" x="775" y="420">yes</text>
+  <text class="label" x="550" y="615">yes</text>
+  <text class="label" x="930" y="615">no</text>
+  <text class="label" x="550" y="1055">yes</text>
+  <text class="label" x="775" y="1165">no</text>
+  <text class="label" x="550" y="1375">yes</text>
+  <text class="label" x="930" y="1375">no</text>
+  <text class="label" x="930" y="1525">yes</text>
+  <text class="label" x="775" y="1625">no</text>
+</svg>
