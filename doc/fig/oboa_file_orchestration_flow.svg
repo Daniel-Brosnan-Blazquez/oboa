@@ -1,9 +1,44 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="1700" height="1740" viewBox="0 0 1700 1740" role="img" aria-labelledby="title desc">
-  <title id="title">OBOA single file orchestration flow</title>
-  <desc id="desc">Single-file OBOA orchestration with rule matching, inventory creation, optional processor staging, ABOA archive delegation, optional input deletion, processor execution, and failure recording.</desc>
-  <defs>
-    <style>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="1700"
+   height="1569.9858"
+   viewBox="0 0 1700 1569.9858"
+   role="img"
+   aria-labelledby="title desc"
+   version="1.1"
+   id="svg66"
+   sodipodi:docname="oboa_file_orchestration_flow.svg"
+   inkscape:version="1.4.4 (dcaf3e7d9e, 2026-05-05)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview66"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="0.47413793"
+     inkscape:cx="744.50909"
+     inkscape:cy="726.58182"
+     inkscape:window-width="1920"
+     inkscape:window-height="1011"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg66" />
+  <title
+     id="title">OBOA single file orchestration flow</title>
+  <desc
+     id="desc">Single-file OBOA orchestration with rule matching, inventory creation, optional processor staging, ABOA archive delegation, optional input deletion, processor execution, and failure recording.</desc>
+  <defs
+     id="defs3">
+    <style
+       id="style1">
       .bg { fill: #f8fafc; }
       .box { fill: #fff; stroke: #304c62; stroke-width: 2; }
       .blue { fill: #e8f2ff; stroke: #2c6aa0; }
@@ -20,122 +55,494 @@
       .arrow-red { stroke: #a33b32; stroke-width: 3; fill: none; marker-end: url(#arrowhead-red); }
       .arrow-soft { stroke: #7b8a98; stroke-width: 2.5; fill: none; stroke-dasharray: 8 6; marker-end: url(#arrowhead-soft); }
     </style>
-    <marker id="arrowhead" markerWidth="14" markerHeight="10" refX="12" refY="5" orient="auto">
-      <path d="M0,0 L14,5 L0,10 Z" fill="#304c62"/>
+    <marker
+       id="arrowhead"
+       markerWidth="14"
+       markerHeight="10"
+       refX="12"
+       refY="5"
+       orient="auto">
+      <path
+         d="M 0,0 14,5 0,10 Z"
+         fill="#304c62"
+         id="path1" />
     </marker>
-    <marker id="arrowhead-red" markerWidth="14" markerHeight="10" refX="12" refY="5" orient="auto">
-      <path d="M0,0 L14,5 L0,10 Z" fill="#a33b32"/>
+    <marker
+       id="arrowhead-red"
+       markerWidth="14"
+       markerHeight="10"
+       refX="12"
+       refY="5"
+       orient="auto">
+      <path
+         d="M 0,0 14,5 0,10 Z"
+         fill="#a33b32"
+         id="path2" />
     </marker>
-    <marker id="arrowhead-soft" markerWidth="14" markerHeight="10" refX="12" refY="5" orient="auto">
-      <path d="M0,0 L14,5 L0,10 Z" fill="#7b8a98"/>
+    <marker
+       id="arrowhead-soft"
+       markerWidth="14"
+       markerHeight="10"
+       refX="12"
+       refY="5"
+       orient="auto">
+      <path
+         d="M 0,0 14,5 0,10 Z"
+         fill="#7b8a98"
+         id="path3" />
+    </marker>
+    <marker
+       id="arrowhead-3"
+       markerWidth="14"
+       markerHeight="10"
+       refX="12"
+       refY="5"
+       orient="auto">
+      <path
+         d="M 0,0 14,5 0,10 Z"
+         fill="#304c62"
+         id="path1-6" />
+    </marker>
+    <marker
+       id="arrowhead-red-9"
+       markerWidth="14"
+       markerHeight="10"
+       refX="12"
+       refY="5"
+       orient="auto">
+      <path
+         d="M 0,0 14,5 0,10 Z"
+         fill="#a33b32"
+         id="path2-1" />
+    </marker>
+    <marker
+       id="arrowhead-red-9-0"
+       markerWidth="14"
+       markerHeight="10"
+       refX="12"
+       refY="5"
+       orient="auto">
+      <path
+         d="M 0,0 14,5 0,10 Z"
+         fill="#a33b32"
+         id="path2-1-9" />
+    </marker>
+    <marker
+       id="arrowhead-red-9-06"
+       markerWidth="14"
+       markerHeight="10"
+       refX="12"
+       refY="5"
+       orient="auto">
+      <path
+         d="M 0,0 14,5 0,10 Z"
+         fill="#a33b32"
+         id="path2-1-2" />
     </marker>
   </defs>
-
-  <rect class="bg" width="1700" height="1740"/>
-  <text class="title" x="70" y="72">Single File Orchestration Flow</text>
-  <text class="small" x="70" y="104">Used by oboa_orchestrate and by each ready file selected during a polling pass.</text>
-
-  <rect class="box blue" x="580" y="145" width="360" height="70" rx="12"/>
-  <text class="text" x="635" y="179">orchestrate_file(file_path)</text>
-  <text class="small" x="635" y="201">set reception date</text>
-
-  <polygon class="diamond blue" points="760,255 920,325 760,395 600,325"/>
-  <text class="text" x="702" y="318">Input exists?</text>
-
-  <rect class="box red" x="1080" y="285" width="360" height="80" rx="12"/>
-  <text class="text" x="1125" y="319">Record missing file</text>
-  <text class="small" x="1125" y="343">raise orchestration error</text>
-
-  <rect class="box blue" x="580" y="445" width="360" height="70" rx="12"/>
-  <text class="text" x="635" y="479">Load active configuration</text>
-  <text class="small" x="635" y="501">validate and activate XML</text>
-
-  <rect class="box red" x="1080" y="440" width="360" height="80" rx="12"/>
-  <text class="text" x="1125" y="474">Record configure failure</text>
-  <text class="small" x="1125" y="498">raise configuration error</text>
-
-  <polygon class="diamond blue" points="760,560 920,630 760,700 600,630"/>
-  <text class="text" x="702" y="623">Rule matches?</text>
-
-  <rect class="box amber" x="300" y="750" width="330" height="78" rx="12"/>
-  <text class="text" x="345" y="782">Configured group</text>
-  <text class="small" x="345" y="806">processor may be configured</text>
-
-  <rect class="box amber" x="890" y="750" width="330" height="78" rx="12"/>
-  <text class="text" x="935" y="782">Unknown group</text>
-  <text class="small" x="935" y="806">processed starts true</text>
-
-  <rect class="box gray" x="580" y="880" width="360" height="78" rx="12"/>
-  <text class="text" x="625" y="912">Create file inventory row</text>
-  <text class="small" x="625" y="936">no success operation row</text>
-
-  <polygon class="diamond amber" points="760,1000 920,1070 760,1140 600,1070"/>
-  <text class="text" x="662" y="1063">Processor configured?</text>
-
-  <rect class="box amber" x="240" y="1030" width="300" height="80" rx="12"/>
-  <text class="text" x="280" y="1064">Stage file</text>
-  <text class="small" x="280" y="1088">hard-link or copy internally</text>
-
-  <rect class="box red" x="240" y="1160" width="300" height="80" rx="12"/>
-  <text class="text" x="280" y="1194">Record staging failure</text>
-  <text class="small" x="280" y="1218">move input to error folder</text>
-
-  <rect class="box green" x="580" y="1210" width="360" height="80" rx="12"/>
-  <text class="text" x="625" y="1244">Archive original via ABOA</text>
-  <text class="small" x="625" y="1268">metadata includes file_group</text>
-
-  <rect class="box red" x="1080" y="1210" width="360" height="80" rx="12"/>
-  <text class="text" x="1125" y="1244">Record archive failure</text>
-  <text class="small" x="1125" y="1268">move input to error folder</text>
-
-  <polygon class="diamond green" points="760,1330 920,1390 760,1450 600,1390"/>
-  <text class="text" x="660" y="1383">Delete after archive?</text>
-
-  <rect class="box green" x="240" y="1350" width="300" height="80" rx="12"/>
-  <text class="text" x="280" y="1384">Delete input file</text>
-  <text class="small" x="280" y="1408">only after archive succeeds</text>
-
-  <polygon class="diamond amber" points="760,1480 920,1540 760,1600 600,1540"/>
-  <text class="text" x="675" y="1533">Processor staged?</text>
-
-  <rect class="box amber" x="1080" y="1500" width="360" height="80" rx="12"/>
-  <text class="text" x="1125" y="1534">Execute processor</text>
-  <text class="small" x="1125" y="1558">record failure only</text>
-
-  <rect class="box gray" x="580" y="1660" width="360" height="50" rx="12"/>
-  <text class="text" x="640" y="1693">Return inventory row</text>
-
-  <path class="arrow" d="M760 215 V255"/>
-  <path class="arrow-red" d="M920 325 H1080"/>
-  <path class="arrow" d="M760 395 V445"/>
-  <path class="arrow-red" d="M940 480 H1080"/>
-  <path class="arrow" d="M760 515 V560"/>
-  <path class="arrow" d="M600 630 H465 V750"/>
-  <path class="arrow" d="M920 630 H1055 V750"/>
-  <path class="arrow" d="M465 828 V855 H760 V880"/>
-  <path class="arrow" d="M1055 828 V855 H760 V880"/>
-  <path class="arrow" d="M760 958 V1000"/>
-  <path class="arrow" d="M600 1070 H540"/>
-  <path class="arrow-red" d="M390 1110 V1160"/>
-  <path class="arrow" d="M540 1070 H560 V1250 H580"/>
-  <path class="arrow" d="M760 1140 V1210"/>
-  <path class="arrow-red" d="M940 1250 H1080"/>
-  <path class="arrow" d="M760 1290 V1330"/>
-  <path class="arrow" d="M600 1390 H540"/>
-  <path class="arrow" d="M390 1430 V1540 H600"/>
-  <path class="arrow" d="M760 1450 V1480"/>
-  <path class="arrow" d="M920 1540 H1080"/>
-  <path class="arrow" d="M760 1600 V1660"/>
-  <path class="arrow" d="M1260 1580 V1685 H940"/>
-
-  <text class="label" x="930" y="310">no</text>
-  <text class="label" x="775" y="420">yes</text>
-  <text class="label" x="550" y="615">yes</text>
-  <text class="label" x="930" y="615">no</text>
-  <text class="label" x="550" y="1055">yes</text>
-  <text class="label" x="775" y="1165">no</text>
-  <text class="label" x="550" y="1375">yes</text>
-  <text class="label" x="930" y="1375">no</text>
-  <text class="label" x="930" y="1525">yes</text>
-  <text class="label" x="775" y="1625">no</text>
+  <rect
+     class="bg"
+     width="1700"
+     height="1569.9858"
+     id="rect3"
+     x="0"
+     y="0"
+     style="stroke-width:0.94989" />
+  <text
+     class="title"
+     x="70"
+     y="72"
+     id="text3">Single File Orchestration Flow</text>
+  <text
+     class="small"
+     x="70"
+     y="104"
+     id="text4">Used by oboa_orchestrate and by each ready file selected during a polling pass.</text>
+  <rect
+     class="box blue"
+     x="580"
+     y="145"
+     width="360"
+     height="70"
+     rx="12"
+     id="rect4" />
+  <text
+     class="text"
+     x="635"
+     y="179"
+     id="text5">orchestrate_file(file_path)</text>
+  <text
+     class="small"
+     x="635"
+     y="201"
+     id="text6">set reception date</text>
+  <polygon
+     class="diamond blue"
+     points="760,395 600,325 760,255 920,325 "
+     id="polygon6" />
+  <text
+     class="text"
+     x="702"
+     y="318"
+     id="text7">Input exists?</text>
+  <rect
+     class="box red"
+     x="1080"
+     y="285"
+     width="360"
+     height="80"
+     rx="12"
+     id="rect7" />
+  <text
+     class="text"
+     x="1125"
+     y="319"
+     id="text8">Record missing file</text>
+  <text
+     class="small"
+     x="1125"
+     y="343"
+     id="text9">raise orchestration error</text>
+  <rect
+     class="box blue"
+     x="580"
+     y="445"
+     width="360"
+     height="70"
+     rx="12"
+     id="rect9" />
+  <text
+     class="text"
+     x="635"
+     y="479"
+     id="text10">Load active configuration</text>
+  <text
+     class="small"
+     x="635"
+     y="501"
+     id="text11">validate and activate XML</text>
+  <rect
+     class="box red"
+     x="1080"
+     y="440"
+     width="360"
+     height="80"
+     rx="12"
+     id="rect11" />
+  <text
+     class="text"
+     x="1125"
+     y="474"
+     id="text12">Record configure failure</text>
+  <text
+     class="small"
+     x="1125"
+     y="498"
+     id="text13">raise configuration error</text>
+  <polygon
+     class="diamond blue"
+     points="760,700 600,630 760,560 920,630 "
+     id="polygon13" />
+  <text
+     class="text"
+     x="702"
+     y="623"
+     id="text14">Rule matches?</text>
+  <rect
+     class="box amber"
+     x="300"
+     y="750"
+     width="330"
+     height="78"
+     rx="12"
+     id="rect14" />
+  <text
+     class="text"
+     x="345"
+     y="782"
+     id="text15">Configured group</text>
+  <text
+     class="small"
+     x="345"
+     y="806"
+     id="text16">processor may be configured</text>
+  <rect
+     class="box amber"
+     x="890"
+     y="750"
+     width="330"
+     height="78"
+     rx="12"
+     id="rect16" />
+  <text
+     class="text"
+     x="935"
+     y="782"
+     id="text17">Unknown group</text>
+  <text
+     class="small"
+     x="935"
+     y="806"
+     id="text18">processed starts true</text>
+  <rect
+     class="box gray"
+     x="580"
+     y="880"
+     width="360"
+     height="78"
+     rx="12"
+     id="rect18" />
+  <text
+     class="text"
+     x="625"
+     y="912"
+     id="text19">Create file inventory row</text>
+  <text
+     class="small"
+     x="625"
+     y="936"
+     id="text20">no success operation row</text>
+  <rect
+     class="box red"
+     x="1167.0927"
+     y="1180.3896"
+     width="194.49971"
+     height="80.385742"
+     rx="7.7799888"
+     id="rect23" />
+  <text
+     class="text"
+     x="1183.424"
+     y="1214.5825"
+     id="text24">Record any failure</text>
+  <text
+     class="small"
+     x="1183.424"
+     y="1238.5825"
+     id="text25">move input to error folder</text>
+  <rect
+     class="box green"
+     x="580"
+     y="1027.3093"
+     width="360"
+     height="80"
+     rx="12"
+     id="rect25" />
+  <text
+     class="text"
+     x="625"
+     y="1061.3093"
+     id="text26">Archive original via ABOA</text>
+  <text
+     class="small"
+     x="625"
+     y="1085.3093"
+     id="text27">metadata includes file_group</text>
+  <rect
+     class="box red"
+     x="1080"
+     y="1027.3093"
+     width="360"
+     height="80"
+     rx="12"
+     id="rect27" />
+  <text
+     class="text"
+     x="1125"
+     y="1061.3093"
+     id="text28">Record archive failure</text>
+  <text
+     class="small"
+     x="1125"
+     y="1085.3093"
+     id="text29">move input to error folder</text>
+  <polygon
+     class="diamond green"
+     points="760,1330 920,1390 760,1450 600,1390 "
+     id="polygon29"
+     transform="translate(0,-182.69068)" />
+  <text
+     class="text"
+     x="660"
+     y="1200.3093"
+     id="text30">Delete after archive?</text>
+  <rect
+     class="box green"
+     x="240"
+     y="1243.3093"
+     width="300"
+     height="80"
+     rx="12"
+     id="rect30" />
+  <text
+     class="text"
+     x="280"
+     y="1277.3093"
+     id="text31">Delete input file</text>
+  <text
+     class="small"
+     x="280"
+     y="1301.3093"
+     id="text32">only after archive succeeds</text>
+  <polygon
+     class="diamond amber"
+     points="760,1480 920,1540 760,1600 600,1540 "
+     id="polygon32"
+     transform="translate(0,-182.69068)" />
+  <text
+     class="text"
+     x="675"
+     y="1350.3093"
+     id="text33">Processor staged?</text>
+  <rect
+     class="box amber"
+     x="1080"
+     y="1317.3093"
+     width="360"
+     height="80"
+     rx="12"
+     id="rect33" />
+  <text
+     class="text"
+     x="1125"
+     y="1351.3093"
+     id="text34">Execute processor</text>
+  <text
+     class="small"
+     x="1125"
+     y="1375.3093"
+     id="text35">record failure only</text>
+  <rect
+     class="box gray"
+     x="580"
+     y="1477.3093"
+     width="360"
+     height="50"
+     rx="12"
+     id="rect35" />
+  <text
+     class="text"
+     x="640"
+     y="1510.3093"
+     id="text36">Return inventory row</text>
+  <path
+     class="arrow"
+     d="m 760,215 v 40"
+     id="path36" />
+  <path
+     class="arrow-red"
+     d="m 920,325 h 160"
+     id="path37" />
+  <path
+     class="arrow"
+     d="m 760,395 v 50"
+     id="path38" />
+  <path
+     class="arrow-red"
+     d="m 940,480 h 140"
+     id="path39" />
+  <path
+     class="arrow"
+     d="m 760,515 v 45"
+     id="path40" />
+  <path
+     class="arrow"
+     d="M 600,630 H 465 v 120"
+     id="path41" />
+  <path
+     class="arrow"
+     d="m 920,630 h 135 v 120"
+     id="path42" />
+  <path
+     class="arrow"
+     d="m 465,828 v 27 h 295 v 25"
+     id="path43" />
+  <path
+     class="arrow"
+     d="m 1055,828 v 27 H 760 v 25"
+     id="path44" />
+  <path
+     class="arrow-red"
+     d="m 1268.9853,1318.0266 0.5272,-52.738"
+     id="path47-7-1"
+     sodipodi:nodetypes="cc"
+     style="fill:none;stroke:#a33b32;stroke-width:3;marker-end:url(#arrowhead-red-9-06)" />
+  <path
+     class="arrow"
+     d="m 760,957.30932 v 69.99998"
+     id="path49" />
+  <path
+     class="arrow-red"
+     d="m 940,1067.3093 h 140"
+     id="path50" />
+  <path
+     class="arrow"
+     d="m 760,1107.3093 v 40"
+     id="path51" />
+  <path
+     class="arrow"
+     d="M 600,1207.3093 H 392.52905 l -0.17295,30.5727"
+     id="path52"
+     sodipodi:nodetypes="ccc" />
+  <path
+     class="arrow"
+     d="m 390,1323.3683 v 33.941 h 210"
+     id="path53"
+     sodipodi:nodetypes="ccc" />
+  <path
+     class="arrow"
+     d="m 760,1267.3093 v 30"
+     id="path54" />
+  <path
+     class="arrow"
+     d="m 920,1357.3093 h 160"
+     id="path55" />
+  <path
+     class="arrow"
+     d="m 760,1417.3093 v 60"
+     id="path56" />
+  <path
+     class="arrow"
+     d="m 1260,1397.3093 v 105 H 940"
+     id="path57" />
+  <text
+     class="label"
+     x="930"
+     y="310"
+     id="text57">no</text>
+  <text
+     class="label"
+     x="775"
+     y="420"
+     id="text58">yes</text>
+  <text
+     class="label"
+     x="550"
+     y="615"
+     id="text59">yes</text>
+  <text
+     class="label"
+     x="930"
+     y="615"
+     id="text60">no</text>
+  <text
+     class="label"
+     x="550"
+     y="1226.3093"
+     id="text63">yes</text>
+  <text
+     class="label"
+     x="780.86475"
+     y="1281.7905"
+     id="text64">no</text>
+  <text
+     class="label"
+     x="930"
+     y="1342.3093"
+     id="text65">yes</text>
+  <text
+     class="label"
+     x="775"
+     y="1442.3093"
+     id="text66">no</text>
 </svg>

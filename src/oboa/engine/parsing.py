@@ -11,6 +11,7 @@ from lxml import etree
 from oboa.engine.errors import OrchestrationConfigurationError
 from oboa.engine.functions import get_schemas_path
 from oboa.engine.xpath_functions import register_xpath_functions
+from oboa.processors.base_processor import normalize_processor_command
 
 
 logger = logging.getLogger(__name__)
@@ -95,7 +96,8 @@ def _rule_from_node(node, index=0, configuration_dir=None):
     """
     Validate and normalize one XML rule node.
 
-    Relative processor paths are resolved against ``configuration_dir``.
+    Relative processor executables are resolved against ``configuration_dir``.
+    Processor command arguments are preserved.
 
     :param node: XML ``data`` rule node
     :type node: lxml.etree._Element
@@ -124,14 +126,18 @@ def _rule_from_node(node, index=0, configuration_dir=None):
 
     data_processor = node.xpath("string(data_processor)").strip()
     if data_processor != "":
-        data_processor = os.path.expanduser(data_processor)
-        if not os.path.isabs(data_processor) and configuration_dir is not None:
-            data_processor = os.path.join(configuration_dir, data_processor)
-        data_processor = os.path.abspath(data_processor)
-        if not (os.path.isfile(data_processor) and os.access(data_processor, os.X_OK)):
-            raise OrchestrationConfigurationError(
-                "The data_processor {} is not an executable file".format(data_processor)
+        try:
+            data_processor = normalize_processor_command(
+                data_processor,
+                configuration_dir=configuration_dir,
             )
+        except Exception as exc:
+            raise OrchestrationConfigurationError(
+                "The data_processor {} is not an executable command: {}".format(
+                    data_processor,
+                    exc,
+                )
+            ) from exc
         data_processor_nodes = node.xpath("data_processor")
         if data_processor_nodes:
             data_processor_nodes[0].text = data_processor

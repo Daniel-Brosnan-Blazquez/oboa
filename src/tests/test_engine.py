@@ -141,6 +141,24 @@ class TestEngine(unittest.TestCase):
         assert engine.query.get_orchestration_operations() == []
         engine.close_session()
 
+    def test_orchestrate_executes_processor_command_parameters(self):
+        """
+        Fill processor command parameters before executing the staged file.
+        """
+        input_file = self.copy_input("sample.txt")
+        engine = self.make_engine(
+            MockArchiveClient(delete=False),
+            INPUTS / "orchestrator_texts_with_processor_parameters.xml",
+        )
+
+        row = engine.orchestrate_file(str(input_file))
+
+        assert row.archived is True
+        assert row.processed is True
+        assert not input_file.exists()
+        assert engine.query.get_orchestration_operations() == []
+        engine.close_session()
+
     def test_default_archive_client_receives_group_and_delete_flag(self):
         """
         Use the default archive client path when no archive client is injected.

@@ -64,6 +64,18 @@ class TestConfiguration(unittest.TestCase):
         with self.assertRaises(OrchestrationConfigurationError):
             get_orchestrator_configuration(path)
 
+    def test_processor_command_parameters_are_preserved(self):
+        """
+        Normalize processor executables without removing command parameters.
+        """
+        processor = (INPUTS / "processor_parameters.sh").resolve()
+        configuration_xpath = get_orchestrator_configuration(
+            INPUTS / "orchestrator_texts_with_processor_parameters.xml"
+        )
+        rule = configuration_xpath("/orchestrator_configuration/data")[0]
+
+        assert rule.xpath("string(data_processor)").strip() == "{} -r -f %F".format(processor)
+
     def test_missing_malformed_and_schema_invalid_configurations_are_rejected(self):
         """
         Reject configuration files that are absent, malformed, or schema-invalid.
