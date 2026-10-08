@@ -150,8 +150,8 @@ structure:
     "port": 5432,
     "database": "oboadb",
     "db_api": "postgresql",
-    "pool_size": 100,
-    "max_overflow": 100
+    "pool_size": 5,
+    "max_overflow": 5
   }
 }
 ```
