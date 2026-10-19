@@ -53,6 +53,12 @@ database container. The source checkout is mounted into the OBOA container at
 `/oboa`, and the container user can be mapped to the host user with
 `UID_HOST_USER` and `GID_HOST_USER`.
 
+The development image copies the source and installs OBOA in editable mode into
+`/usr/local/oboa-venv` during its build, including the runtime and test
+dependencies declared in `src/setup.py`. At runtime, the mounted checkout replaces
+the copied source, so source edits take effect immediately. Rebuild the image
+when dependencies change.
+
 ```bash
 UID_HOST_USER=$(id -u) GID_HOST_USER=$(id -g) docker compose -f compose_dev.yml up -d --build
 docker compose -f compose_dev.yml exec oboa initialize_oboa_ddbb.sh
@@ -64,9 +70,27 @@ docker compose -f compose_dev.yml exec oboa oboa_query.py --configurations --act
 database from `src/oboa/datamodel/oboa_data_model.sql`, so it deletes existing
 OBOA inventory data for that database.
 
-OBOA archives through ABOA by default. For orchestration commands that archive
-files, make sure the ABOA package or source tree is available in the container
-and that ABOA runtime configuration is valid.
+OBOA archives through ABOA by default. Both Docker images install
+`aboa==0.2.0` from PyPI during their builds.
+Both Compose files set these ABOA variables:
+
+- `ABOA_DDBB_HOST`: defaults to `oboa_db`; override it in the host environment
+  to use another PostgreSQL server.
+- `ABOA_LOG_PATH`: `/log`, shared with OBOA logs.
+- `ABOA_DEFAULT_ARCHIVE_PATH`: `/aboa_archive`, used as the fallback when
+  the XML archive configuration cannot be activated. The XML `root_directory`
+  takes precedence.
+
+ABOA uses its bundled configuration, including the `aboadb` database and `aboa`
+database user. Initialize its database before archiving:
+
+```bash
+docker compose -f compose_dev.yml exec oboa aboa_init.py
+```
+
+For custom configuration, mount a directory containing ABOA's `datamodel.json`,
+`engine.json`, and `archive_configurations.xml`, then set `ABOA_RESOURCES_PATH`
+to that container directory.
 
 ## Local Python Setup
 
@@ -77,6 +101,9 @@ python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -e "src[tests]"
 ```
+
+Installing OBOA automatically installs `aboa==0.2.0` from PyPI as a required
+runtime dependency and the default archive manager.
 
 Set the runtime paths before importing or running OBOA:
 

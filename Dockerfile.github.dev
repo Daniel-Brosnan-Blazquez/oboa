@@ -3,8 +3,6 @@ FROM rockylinux:9
 
 ARG REPOSITORY_URI
 ARG GITHUB_BRANCH
-ARG ABOA_REPOSITORY_URI=""
-ARG ABOA_GITHUB_BRANCH="main"
 ARG UID_HOST_USER=1000
 ARG GID_HOST_USER=1000
 
@@ -31,6 +29,7 @@ RUN yum install --allowerasing -y \
 RUN pip3 install wheel
 
 RUN mkdir /log \
+    /aboa_archive \
     /scripts \
     /resources_path \
     /schemas \
@@ -38,10 +37,9 @@ RUN mkdir /log \
     /oboa_polling \
     /oboa_processing \
     /oboa_error \
-    /oboa \
-    /aboa
+    /oboa
 
-RUN chown -R boa:boa /log /scripts /resources_path /schemas /datamodel /oboa_polling /oboa_processing /oboa_error /oboa /aboa
+RUN chown -R boa:boa /log /aboa_archive /scripts /resources_path /schemas /datamodel /oboa_polling /oboa_processing /oboa_error /oboa
 
 RUN mkdir /usr/local/python-packages
 RUN chown -R boa:boa /usr/local/python-packages
@@ -53,14 +51,8 @@ USER boa
 
 RUN git clone --branch ${GITHUB_BRANCH} ${REPOSITORY_URI} /oboa
 
-# Install ABOA with OBOA so pip can use the local ABOA package to satisfy
-# OBOA's pinned runtime dependency during dependency resolution.
-RUN if [ -n "${ABOA_REPOSITORY_URI}" ]; then \
-      git clone --branch ${ABOA_GITHUB_BRANCH} ${ABOA_REPOSITORY_URI} /aboa && \
-      pip3 install --use-pep517 --target=/usr/local/python-packages "/aboa/src" "/oboa/src[tests]"; \
-    else \
-      pip3 install --use-pep517 --target=/usr/local/python-packages "aboa==0.1.0" "/oboa/src[tests]"; \
-    fi
+# Install runtime dependencies, including ABOA from PyPI, through OBOA's metadata.
+RUN pip3 install --use-pep517 --target=/usr/local/python-packages "/oboa/src[tests]"
 
 RUN cp /oboa/src/oboa/config/*.json /oboa/src/oboa/config/*.xml /resources_path
 RUN cp /oboa/src/oboa/scripts/*.py /scripts

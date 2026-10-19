@@ -16,8 +16,6 @@ services:
          args:
             REPOSITORY_URI: ${REPOSITORY_URI}
             GITHUB_BRANCH: ${GITHUB_BRANCH}
-            ABOA_REPOSITORY_URI: ${ABOA_REPOSITORY_URI:-}
-            ABOA_GITHUB_BRANCH: ${ABOA_GITHUB_BRANCH:-main}
             UID_HOST_USER: ${UID_HOST_USER:-1000}
             GID_HOST_USER: ${GID_HOST_USER:-1000}
       container_name: oboa
@@ -26,6 +24,9 @@ services:
       user: "${UID_HOST_USER:-1000}:${GID_HOST_USER:-1000}"
       environment:
          - OBOA_DDBB_HOST=oboa_db
+         - ABOA_DDBB_HOST=${ABOA_DDBB_HOST:-oboa_db}
+         - ABOA_LOG_PATH=/log
+         - ABOA_DEFAULT_ARCHIVE_PATH=/aboa_archive
       shm_size: 512M
       networks:
          - boa_network

@@ -19,7 +19,7 @@ setup(
     },
     python_requires=">=3",
     install_requires=[
-        "aboa==0.1.0",
+        "aboa==0.2.0",
         "sqlalchemy==1.3.22",
         "psycopg2-binary==2.9.11",
         "python-dateutil==2.9.0.post0",

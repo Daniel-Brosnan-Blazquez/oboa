@@ -22,6 +22,9 @@ services:
       user: "${UID_HOST_USER:-1000}:${GID_HOST_USER:-1000}"
       environment:
          - OBOA_DDBB_HOST=oboa_db
+         - ABOA_DDBB_HOST=${ABOA_DDBB_HOST:-oboa_db}
+         - ABOA_LOG_PATH=/log
+         - ABOA_DEFAULT_ARCHIVE_PATH=/aboa_archive
          - OBOA_RESOURCES_PATH=/oboa/src/oboa/config
          - OBOA_LOG_PATH=/log
          - OBOA_SCHEMAS_PATH=/oboa/src/oboa/schemas
