@@ -52,7 +52,7 @@ USER boa
 RUN git clone --branch ${GITHUB_BRANCH} ${REPOSITORY_URI} /oboa
 
 # Install runtime dependencies, including ABOA from PyPI, through OBOA's metadata.
-RUN pip3 install --use-pep517 --target=/usr/local/python-packages "/oboa/src[tests]"
+RUN pip3 install --use-pep517 --target=/usr/local/python-packages "/oboa[tests]"
 
 RUN cp /oboa/src/oboa/config/*.json /oboa/src/oboa/config/*.xml /resources_path
 RUN cp /oboa/src/oboa/scripts/*.py /scripts

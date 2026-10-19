@@ -56,11 +56,12 @@ ENV LANG=en_US.utf-8
 WORKDIR /oboa
 
 # Compose volumes are only mounted at runtime; the build needs its own source copy.
-COPY --chown=${UID_HOST_USER}:${GID_HOST_USER} src/ /oboa/src/
+COPY . /oboa
+RUN chown -R boa:boa /oboa
 
 USER boa
 
-RUN python3 -m pip install --editable "/oboa/src[tests]"
+RUN python3 -m pip install --editable "/oboa[tests]"
 
 # Install datamodel
 RUN ln -s /oboa/src/oboa/datamodel/oboa_data_model.sql /datamodel

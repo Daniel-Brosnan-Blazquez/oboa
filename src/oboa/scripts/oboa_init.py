@@ -79,8 +79,11 @@ def init(datamodel_path=None):
             print("The specified path to the datamodel file {} does not exist".format(datamodel_path))
             exit(-1)
     else:
-        # Default path for the docker environment.
-        datamodel_path = "/datamodel/oboa_data_model.sql"
+        datamodel_path = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)),
+            "datamodel",
+            "oboa_data_model.sql",
+        )
 
     database_address = db_configuration["host"]
     database_port = db_configuration["port"]

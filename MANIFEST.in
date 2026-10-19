@@ -1,0 +1,6 @@
+recursive-include src/oboa/config *.json *.xml
+recursive-include src/oboa/datamodel *.sql *.dbm
+recursive-include src/oboa/schemas *.xsd
+recursive-include src/oboa/scripts *.sh
+prune src/tests
+global-exclude __pycache__ *.py[cod] .coverage

@@ -13,6 +13,7 @@ command line tools and Python interfaces through `oboa.engine.engine.Engine` and
 
 - [What OBOA Provides](#what-oboa-provides)
 - [Quick Start With Docker](#quick-start-with-docker)
+- [Install From PyPI](#install-from-pypi)
 - [Local Python Setup](#local-python-setup)
 - [Runtime Configuration](#runtime-configuration)
 - [Orchestration Configuration XML](#orchestration-configuration-xml)
@@ -22,6 +23,7 @@ command line tools and Python interfaces through `oboa.engine.engine.Engine` and
 - [Data Model](#data-model)
 - [Development Layout](#development-layout)
 - [Tests](#tests)
+- [Publishing To PyPI](#publishing-to-pypi)
 
 ## What OBOA Provides
 
@@ -55,7 +57,7 @@ database container. The source checkout is mounted into the OBOA container at
 
 The development image copies the source and installs OBOA in editable mode into
 `/usr/local/oboa-venv` during its build, including the runtime and test
-dependencies declared in `src/setup.py`. At runtime, the mounted checkout replaces
+dependencies declared in `pyproject.toml`. At runtime, the mounted checkout replaces
 the copied source, so source edits take effect immediately. Rebuild the image
 when dependencies change.
 
@@ -92,14 +94,32 @@ For custom configuration, mount a directory containing ABOA's `datamodel.json`,
 `engine.json`, and `archive_configurations.xml`, then set `ABOA_RESOURCES_PATH`
 to that container directory.
 
-## Local Python Setup
+## Install From PyPI
 
-For local development outside Docker, install the package from `src/setup.py`:
+OBOA requires Python 3.9 or newer and Linux with Bash. Install it in a virtual
+environment:
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-python -m pip install -e "src[tests]"
+python -m pip install oboa
+oboa_poll.py --help
+```
+
+The package includes its default configuration, XML schema, SQL data model, and
+shell helpers. PostgreSQL client tools (`psql`) must be installed separately to
+initialize a database with `oboa_init.py`; a reachable PostgreSQL server is
+required for orchestration. Set `OBOA_DDBB_HOST` and `ABOA_DDBB_HOST` as needed,
+and follow the runtime configuration instructions below before processing files.
+
+## Local Python Setup
+
+For local development outside Docker, install from the repository root:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -e ".[tests]"
 ```
 
 Installing OBOA automatically installs `aboa==0.2.0` from PyPI as a required
@@ -331,19 +351,19 @@ Important query methods include `get_active_orchestration_configuration`,
 
 ### Operations Overview
 
-![OBOA operations overview flow](doc/fig/oboa_operations_overview_flow.svg)
+![OBOA operations overview flow](https://raw.githubusercontent.com/Daniel-Brosnan-Blazquez/oboa/main/doc/fig/oboa_operations_overview_flow.svg)
 
 ### Configuration Activation
 
-![OBOA configuration activation flow](doc/fig/oboa_configuration_activation_flow.svg)
+![OBOA configuration activation flow](https://raw.githubusercontent.com/Daniel-Brosnan-Blazquez/oboa/main/doc/fig/oboa_configuration_activation_flow.svg)
 
 ### Daemon Polling And Priority
 
-![OBOA daemon polling and priority flow](doc/fig/oboa_daemon_polling_priority_flow.svg)
+![OBOA daemon polling and priority flow](https://raw.githubusercontent.com/Daniel-Brosnan-Blazquez/oboa/main/doc/fig/oboa_daemon_polling_priority_flow.svg)
 
 ### File Orchestration
 
-![OBOA file orchestration flow](doc/fig/oboa_file_orchestration_flow.svg)
+![OBOA file orchestration flow](https://raw.githubusercontent.com/Daniel-Brosnan-Blazquez/oboa/main/doc/fig/oboa_file_orchestration_flow.svg)
 
 ## Data Model
 
@@ -351,7 +371,7 @@ The DDBB model, stored in `src/oboa/datamodel/oboa_data_model.dbm`, is built
 using pgModeler. The tool is then used to generate the SQL instructions, stored
 in `src/oboa/datamodel/oboa_data_model.sql`, to initialize the DDBB.
 
-![OBOA data model](doc/fig/oboa_data_model.png)
+![OBOA data model](https://raw.githubusercontent.com/Daniel-Brosnan-Blazquez/oboa/main/doc/fig/oboa_data_model.png)
 
 Main inventory tables:
 
@@ -382,7 +402,7 @@ Main inventory tables:
 Install the test extra and run the suite from the repository root:
 
 ```bash
-python -m pip install -e "src[tests]"
+python -m pip install -e ".[tests]"
 export OBOA_RESOURCES_PATH="$PWD/src/oboa/config"
 export OBOA_SCHEMAS_PATH="$PWD/src/oboa/schemas"
 export OBOA_LOG_PATH="$PWD/log"
@@ -395,3 +415,10 @@ python -m pytest src/tests
 
 The integration tests that exercise OBOA through ABOA are skipped when the ABOA
 package is not available.
+
+## Publishing To PyPI
+
+See [the publishing guide](https://github.com/Daniel-Brosnan-Blazquez/oboa/blob/main/doc/publishing.md)
+for local build checks, PyPI Trusted Publisher setup, and the GitHub release
+workflow. Package metadata lives in `pyproject.toml`; the release version is
+read from `src/oboa/__init__.py`.
