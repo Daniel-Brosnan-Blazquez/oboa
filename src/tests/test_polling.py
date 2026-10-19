@@ -13,7 +13,7 @@ os.environ.setdefault("OBOA_LOG_PATH", "/tmp/oboa_log")
 from oboa.datamodel.base import Base, engine as sqlalchemy_engine
 from oboa.engine.engine import Engine
 from oboa.engine.query import Query
-from tests.test_engine import MockArchiveClient
+from .test_engine import MockArchiveClient
 
 
 INPUTS = Path(__file__).parent / "inputs"
