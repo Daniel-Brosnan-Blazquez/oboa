@@ -13,29 +13,32 @@ inside the development container. From the repository root:
 python3 -m pip install build twine
 python3 -m build
 python3 -m twine check --strict dist/*
+python3 tools/check_distribution.py dist --tag v0.1.0
 ```
 
 Use a fresh `dist/` directory for each build. The default `python3 -m build`
 builds the wheel from the source distribution, checking that the source archive
 contains everything needed to rebuild it. Twine validates the metadata and
-README rendering.
+README rendering. The checker validates both archives' metadata, licenses,
+bundled resources, console entry points, matching versions, and release tag,
+and rejects test output and Python caches. Artifact checks use only the Python
+standard library; OBOA does not need to be installed for this step.
 
 Install each artifact in a separate clean environment outside the source tree,
-then run the installed distribution checker. Activate the environment so its
-console commands are on `PATH`:
+then run the installed distribution checker:
 
 ```bash
 python3 -m pip install /path/to/oboa/dist/oboa-0.1.0-py3-none-any.whl
 python3 -m pip check
-python3 /path/to/oboa/tools/check_distribution.py
+python3 /path/to/oboa/tools/check_distribution.py /path/to/oboa/dist --installed
 ```
 
 Repeat in another clean environment using `oboa-0.1.0.tar.gz`. Replace `0.1.0`
 in these examples with the version being released.
 
-The installed checker verifies the version, license metadata, README, bundled
-JSON/XML/XSD/SQL/pgModeler/shell resources, and all six console commands. It also
-checks that the initializer resolves its bundled SQL file and executable helper,
+The installed checker compares the installed version to the artifacts, verifies
+bundled JSON/XML/XSD/SQL/pgModeler/shell resources, and runs all six console
+commands. It also checks that the initializer resolves its bundled SQL file and executable helper,
 using a mock so no database is initialized. Command help checks use a temporary
 directory and the packaged configuration defaults.
 
@@ -45,8 +48,8 @@ runs the checker, and executes the configuration, function, and logging tests.
 ## Publish a release
 
 1. Update `[project].version` in `pyproject.toml` for subsequent releases. Each
-   PyPI release needs a new version. The installed package's `oboa.__version__`
-   reads the version from its distribution metadata.
+   PyPI release needs a new version. Read the installed version with
+   `importlib.metadata.version("oboa")`.
 2. Commit and push the release changes. Confirm the packaging and integration
    workflows pass.
 3. Create and publish a GitHub release whose tag is exactly `v` followed by the

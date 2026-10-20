@@ -24,23 +24,16 @@ jobs:
           python-version: "3.12"
       - name: Install build tools
         run: python -m pip install build twine
-      - name: Check release tag matches the package version
-        if: github.event_name == 'release'
-        env:
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
-        run: |
-          python - <<'PY'
-          import os
-          import tomllib
-          with open("pyproject.toml", "rb") as metadata:
-              version = tomllib.load(metadata)["project"]["version"]
-          if os.environ["RELEASE_TAG"] != "v" + version:
-              raise SystemExit("Release tag must be v" + version)
-          PY
+      - name: Test the distribution checker
+        run: python -m unittest discover -s tools -p 'test_*.py'
       - name: Build wheel and source distribution
         run: python -m build
-      - name: Validate PyPI metadata and README
-        run: python -m twine check --strict dist/*
+      - name: Validate metadata, resources, and release version
+        env:
+          RELEASE_TAG: ${{ github.event_name == 'release' && github.event.release.tag_name || '' }}
+        run: |
+          python -m twine check --strict dist/*
+          python tools/check_distribution.py dist --tag "$RELEASE_TAG"
       - uses: actions/upload-artifact@v5
         with:
           name: python-distributions
@@ -80,7 +73,7 @@ jobs:
       - name: Check installed resources and commands outside the checkout
         run: |
           cd "$RUNNER_TEMP"
-          python "$GITHUB_WORKSPACE/tools/check_distribution.py"
+          python "$GITHUB_WORKSPACE/tools/check_distribution.py" "$GITHUB_WORKSPACE/dist" --installed
       - name: Test packaged resources, configuration, and logging
         env:
           OBOA_LOG_PATH: ${{ runner.temp }}/oboa-log
