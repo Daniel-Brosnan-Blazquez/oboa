@@ -61,6 +61,11 @@ dependencies declared in `pyproject.toml`. At runtime, the mounted checkout repl
 the copied source, so source edits take effect immediately. Rebuild the image
 when dependencies change.
 
+Both development Compose files set `POSTGRES_HOST_AUTH_METHOD=trust` to support
+the passwordless connections used by ABOA and its database initialization scripts.
+The database port is not published to the host, but containers on `boa_network`
+can connect without a password. Use these settings only for development.
+
 ```bash
 UID_HOST_USER=$(id -u) GID_HOST_USER=$(id -g) docker compose -f compose_dev.yml up -d --build
 docker compose -f compose_dev.yml exec oboa initialize_oboa_ddbb.sh
