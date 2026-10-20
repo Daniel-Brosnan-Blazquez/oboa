@@ -1,0 +1,69 @@
+# Base the image on Rocky Linux (Red Hat compatible)
+FROM rockylinux:9
+
+ARG UID_HOST_USER=1000
+ARG GID_HOST_USER=1000
+
+USER root
+
+RUN groupadd -o -g ${GID_HOST_USER} boa && useradd -m -o -r -u ${UID_HOST_USER} -g boa boa
+
+RUN yum install -y epel-release
+
+RUN yum install --allowerasing -y \
+    glibc-langpack-en \
+    less \
+    make \
+    postgresql \
+    postgresql-devel \
+    procps \
+    python3 \
+    python3-devel \
+    python3-pip \
+    redhat-rpm-config \
+    which
+
+RUN mkdir /log \
+    /aboa_archive \
+    /resources_path \
+    /schemas \
+    /datamodel \
+    /oboa_polling \
+    /oboa_processing \
+    /oboa_error \
+    /oboa
+
+RUN chown -R boa:boa /log /aboa_archive /resources_path /schemas /datamodel /oboa_polling /oboa_processing /oboa_error /oboa
+
+RUN python3 -m venv /usr/local/oboa-venv
+ENV PATH="/usr/local/oboa-venv/bin:/oboa/src/oboa/scripts:${PATH}"
+RUN pip3 install --upgrade pip setuptools wheel
+RUN chown -R boa:boa /usr/local/oboa-venv
+
+ENV PYTHONPATH=/oboa/src
+
+ENV OBOA_RESOURCES_PATH=/oboa/src/oboa/config
+ENV OBOA_LOG_PATH=/log
+ENV OBOA_SCHEMAS_PATH=/oboa/src/oboa/schemas
+ENV OBOA_POLLING_DIR=/oboa_polling
+ENV OBOA_PROCESSING_DIR=/oboa_processing
+ENV OBOA_ERROR_DIR=/oboa_error
+ENV OBOA_DAEMON_PID_FILE=/tmp/oboa.pid
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV LC_ALL=en_US.utf-8
+ENV LANG=en_US.utf-8
+
+WORKDIR /oboa
+
+# Compose volumes are only mounted at runtime; the build needs its own source copy.
+COPY . /oboa
+RUN chown -R boa:boa /oboa
+
+USER boa
+
+RUN python3 -m pip install --editable "/oboa[tests]"
+
+# Install datamodel
+RUN ln -s /oboa/src/oboa/datamodel/oboa_data_model.sql /datamodel
+
+CMD ["/bin/bash", "/oboa/src/oboa/scripts/start_oboa.sh"]

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<orchestrator_configuration>
+  <data group="low" priority="2">
+    <data_mask>*.bin</data_mask>
+  </data>
+  <data group="high" priority="1">
+    <data_mask>*.txt</data_mask>
+    <data_processor>processor_success.sh</data_processor>
+  </data>
+</orchestrator_configuration>

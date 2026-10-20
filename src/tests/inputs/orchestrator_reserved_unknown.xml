@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<orchestrator_configuration>
+  <data group="unknown" priority="1">
+    <data_mask>*.txt</data_mask>
+  </data>
+</orchestrator_configuration>

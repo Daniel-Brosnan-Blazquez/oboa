@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<orchestrator_configuration>
+  <data group="texts" priority="1">
+    <data_mask>*.txt</data_mask>
+  </data>
+  <data group="binaries" priority="1">
+    <data_mask>*.bin</data_mask>
+  </data>
+</orchestrator_configuration>
